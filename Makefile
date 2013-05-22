@@ -36,7 +36,7 @@ lib:
 	$(MAKE) -C ../source_library/build/
 
 HomeZwave:	Main.o lib
-	$(LD) -o $@ $(LDFLAGS) $< $(LIBS) -pthread -ludev -lmysqlcppconn
+	$(LD) -o $@ $(LDFLAGS) $< $(LIBS) -pthread -ludev
 
 clean:
 	rm -f HomeZwave Main.o
