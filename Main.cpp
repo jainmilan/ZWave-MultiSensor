@@ -35,6 +35,7 @@
 #include <pthread.h>
 #include <iostream>
 #include <ctime>
+#include <time.h>
 #include <fstream>
 #include "Options.h"
 #include "Manager.h"
@@ -68,6 +69,8 @@ static uint32 g_homeId = 0;
 static bool   g_initFailed = false;
 ofstream myCSV;
 std::time_t t;
+char b[11];
+struct tm timeinfo;
 char filename[20];
 typedef struct
 {
@@ -149,7 +152,7 @@ void printConfigVariable(uint8 index, uint8 byte_value) {
         "Light Threshold", "Stay Awake", "On Value"};
     t = std::time(0); 
     myCSV.open(filename,fstream::app);
-	myCSV<<t<<": "<<parameter_names[index-1]<<" was set to "<<byte_value<<"\n";
+	myCSV<<ctime(&t)<<": "<<parameter_names[index-1]<<" was set to "<<byte_value<<"\n";
 	myCSV.close();
     // printf("\"%s\" was set to %u\n", parameter_names[index-1], byte_value);
 }
@@ -206,7 +209,7 @@ void parseHsm100Sensor(uint8 nodeId, ValueID value_id) {
         default:
             t = std::time(0); 
 			myCSV.open(filename,fstream::app);
-			myCSV<<t<<": NodeId-"<<(int)nodeId<<" Unrecognized Type: "<<(int) value_id.GetType()<<"\n";
+			myCSV<<ctime(&t)<<": NodeId-"<<(int)nodeId<<" Unrecognized Type: "<<(int) value_id.GetType()<<"\n";
 			myCSV.close();
     
             // printf("Unrecognized Type: %d\n", (int) value_id.GetType());
@@ -215,7 +218,7 @@ void parseHsm100Sensor(uint8 nodeId, ValueID value_id) {
     if(!success) {
 		t = std::time(0); 
 		myCSV.open(filename,fstream::app);
-		myCSV<<t<<": NodeId-"<<(int)nodeId<<" Unable to Get the Value \n";
+		myCSV<<ctime(&t)<<": NodeId-"<<(int)nodeId<<" Unable to Get the Value \n";
 		myCSV.close();
         // printf("Unable to Get the Value\n");
         return;
@@ -226,7 +229,7 @@ void parseHsm100Sensor(uint8 nodeId, ValueID value_id) {
         case COMMAND_CLASS_BASIC:
             t = std::time(0); 
 			myCSV.open(filename,fstream::app);
-			myCSV<<t<<": NodeId-"<<(int)nodeId<<" Got COMMAND_CLASS_BASIC!\n";
+			myCSV<<ctime(&t)<<": NodeId-"<<(int)nodeId<<" Got COMMAND_CLASS_BASIC!\n";
 			myCSV.close();
         
             // printf("Got COMMAND_CLASS_BASIC!\n");
@@ -235,7 +238,7 @@ void parseHsm100Sensor(uint8 nodeId, ValueID value_id) {
         case COMMAND_CLASS_SENSOR_MULTILEVEL:
             t = std::time(0); 
 			myCSV.open(filename,fstream::app);
-			myCSV<<t<<": NodeId-"<<(int)nodeId<<" Got COMMAND_CLASS_SENSOR_MULTILEVEL!\n";
+			myCSV<<ctime(&t)<<": NodeId-"<<(int)nodeId<<" Got COMMAND_CLASS_SENSOR_MULTILEVEL!\n";
 			myCSV.close();
         
             // printf("Got COMMAND_CLASS_SENSOR_MULTILEVEL!\n");
@@ -249,7 +252,7 @@ void parseHsm100Sensor(uint8 nodeId, ValueID value_id) {
                     // General
                     t = std::time(0); 
                     myCSV.open(filename,fstream::app);
-					myCSV<<t<<": NodeId-"<<(int)nodeId<<" Last Motion: "<<float_value<<"\n";
+					myCSV<<ctime(&t)<<": NodeId-"<<(int)nodeId<<" Last Motion: "<<float_value<<"\n";
 					myCSV.close();
                     break;
                 case 2:
@@ -257,7 +260,7 @@ void parseHsm100Sensor(uint8 nodeId, ValueID value_id) {
                     g_luminance[nodeId] = float_value;
                     t = std::time(0); 
                     myCSV.open(filename,fstream::app);
-					myCSV<<t<<": NodeId-"<<(int)nodeId<<" Light: "<<g_luminance[nodeId]<<"\n";
+					myCSV<<ctime(&t)<<": NodeId-"<<(int)nodeId<<" Light: "<<g_luminance[nodeId]<<"\n";
 					myCSV.close();
                     break;
                 case 3:
@@ -265,14 +268,14 @@ void parseHsm100Sensor(uint8 nodeId, ValueID value_id) {
                     g_temperature[nodeId]=float_value;
                     t = std::time(0); 
                     myCSV.open(filename,fstream::app);
-					myCSV<<t<<": NodeId-"<<(int)nodeId<<" Temperature: "<<g_temperature[nodeId]<<"\n";
+					myCSV<<ctime(&t)<<": NodeId-"<<(int)nodeId<<" Temperature: "<<g_temperature[nodeId]<<"\n";
 					myCSV.close();
                     break;
 
                 default:
                     t = std::time(0); 
                     myCSV.open(filename,fstream::app);
-					myCSV<<t<<": NodeId-"<<(int)nodeId<<"Unrecognized Instance\n";
+					myCSV<<ctime(&t)<<": NodeId-"<<(int)nodeId<<"Unrecognized Instance\n";
 					myCSV.close();
             
                     // printf("Unrecognized Instance\n");
@@ -282,7 +285,7 @@ void parseHsm100Sensor(uint8 nodeId, ValueID value_id) {
         case COMMAND_CLASS_CONFIGURATION:
 			t = std::time(0); 
             myCSV.open(filename,fstream::app);
-			myCSV<<t<<": NodeId-"<<(int)nodeId<<"\nGot COMMAND_CLASS_CONFIGURATION!\n";
+			myCSV<<ctime(&t)<<": NodeId-"<<(int)nodeId<<"\nGot COMMAND_CLASS_CONFIGURATION!\n";
 			myCSV.close();
 			// printf("\nGot COMMAND_CLASS_CONFIGURATION!\n");
 			printConfigVariable(value_id.GetIndex(), byte_value);
@@ -290,7 +293,7 @@ void parseHsm100Sensor(uint8 nodeId, ValueID value_id) {
         case COMMAND_CLASS_WAKE_UP:
             t = std::time(0); 
             myCSV.open(filename,fstream::app);
-			myCSV<<t<<": NodeId-"<<(int)nodeId<<"\nGot COMMAND_CLASS_WAKE_UP!\n"<<"Wake-up interval: "<<int_value<<" seconds\n";
+			myCSV<<ctime(&t)<<": NodeId-"<<(int)nodeId<<"\nGot COMMAND_CLASS_WAKE_UP!\n"<<"Wake-up interval: "<<int_value<<" seconds\n";
 			myCSV.close();
 			
             // printf("\nGot COMMAND_CLASS_WAKE_UP!\n");
@@ -301,24 +304,24 @@ void parseHsm100Sensor(uint8 nodeId, ValueID value_id) {
         case COMMAND_CLASS_BATTERY:
 			t = std::time(0); 
             myCSV.open(filename,fstream::app);
-			myCSV<<t<<": NodeId-"<<(int)nodeId<<"\nGot COMMAND_CLASS_BATTERY!\n";
+			myCSV<<ctime(&t)<<": NodeId-"<<(int)nodeId<<"\nGot COMMAND_CLASS_BATTERY!\n";
 			// printf("\nGot COMMAND_CLASS_BATTERY!\n");
 			Manager::Get()->GetValueAsByte(value_id, &byte_value);
-            myCSV<<t<<": NodeId-"<<(int)nodeId<<" BATTERY: "<<(int)byte_value<<"\n";
+            myCSV<<ctime(&t)<<": NodeId-"<<(int)nodeId<<" BATTERY: "<<(int)byte_value<<"\n";
             // printf("Battery: %u\n", byte_value);
             myCSV.close();
             break;
         case COMMAND_CLASS_VERSION:
             t = std::time(0); 
             myCSV.open(filename,fstream::app);
-			myCSV<<t<<": NodeId-"<<(int)nodeId<<"Got COMMAND_CLASS_VERSION!\n";
+			myCSV<<ctime(&t)<<": NodeId-"<<(int)nodeId<<"Got COMMAND_CLASS_VERSION!\n";
             // printf("Got COMMAND_CLASS_VERSION!\n");
             myCSV.close();
             break;
         default:
 			t = std::time(0); 
             myCSV.open(filename,fstream::app);
-			myCSV<<t<<": NodeId-"<<(int)nodeId<<"Got an Unknown COMMAND CLASS!\n";
+			myCSV<<ctime(&t)<<": NodeId-"<<(int)nodeId<<"Got an Unknown COMMAND CLASS!\n";
             // printf("Got an Unknown COMMAND CLASS!\n");
             myCSV.close();
             break;
@@ -437,7 +440,7 @@ void OnNotification
 				 */
 				t = std::time(0); 
                 myCSV.open(filename,fstream::app);
-				myCSV<<t<<": NodeId-"<<(int)nodeId<<" Motion Detected\n";
+				myCSV<<ctime(&t)<<": NodeId-"<<(int)nodeId<<" Motion Detected\n";
 				myCSV.close();
                 
                 // Manager::Get()->RefreshNodeInfo(g_homeId, nodeId);
@@ -495,7 +498,7 @@ void OnNotification
 			 */
 			t = std::time(0); 
             myCSV.open(filename,fstream::app);
-			myCSV<<t<<": NodeId-"<<(int)node<<" Notification Code: "<<code<<"\n";
+			myCSV<<ctime(&t)<<": NodeId-"<<(int)node<<" Notification Code: "<<code<<"\n";
 			myCSV.close();
 			
 			break;
@@ -524,13 +527,16 @@ int main( int argc, char* argv[] )
 	pthread_mutexattr_settype( &mutexattr, PTHREAD_MUTEX_RECURSIVE );
 	pthread_mutex_init( &g_criticalSection, &mutexattr );
 	pthread_mutexattr_destroy( &mutexattr );
-
-	pthread_mutex_lock( &initMutex );
 	
+	pthread_mutex_lock( &initMutex );
+	printf("Hello\n");
 	/*Every Time Program Starts a Log File is generated Based on Timestamp*/
 	t = std::time(0);
-	sprintf(filename,"CSV/%d.csv",t);
-	// printf("%s",filename);
+	// timeinfo = *localtime(&t);
+	// strftime(b, sizeof(b), "%m%d%H%M%y", &timeinfo);
+	printf("%s",ctime(&t));
+	sprintf(filename,"CSV/Log_%d.csv",t);
+	
 	
 	// Create the OpenZWave Manager.
 	// The first argument is the path to the config files (where the manufacturer_specific.xml file is located
@@ -592,7 +598,7 @@ int main( int argc, char* argv[] )
 		Manager::Get()->WriteConfig( g_homeId );
 		t = std::time(0); 
         myCSV.open(filename,fstream::app);
-		myCSV<<t<<": Configuration Written\n ";
+		myCSV<<ctime(&t)<<": Configuration Written\n ";
 		myCSV.close();
 		// printf("Configuration Written\n");
 		
@@ -649,9 +655,9 @@ int main( int argc, char* argv[] )
 		Manager::Get()->GetDriverStatistics( g_homeId, &data );
 		t = std::time(0); 
         myCSV.open(filename,fstream::app);
-		myCSV<<t<<": SOF: "<<data.m_SOFCnt<<" ACK Waiting: "<<data.m_ACKWaiting<<" Read Aborts: "<<data.m_readAborts<<" Bad Checksums: "<<data.m_badChecksum<<"\n";
-		myCSV<<t<<": Reads: "<<data.m_readCnt<<" Writes: "<<data.m_writeCnt<<" CAN: "<<data.m_CANCnt<<" NAK: "<<data.m_NAKCnt<<" ACK: "<<data.m_ACKCnt<<" Out of Frame: "<<data.m_OOFCnt<<"\n";
-		myCSV<<t<<": Dropped: "<<data.m_dropped<<" Retries: "<<data.m_retries<<"\n";
+		myCSV<<ctime(&t)<<": SOF: "<<data.m_SOFCnt<<" ACK Waiting: "<<data.m_ACKWaiting<<" Read Aborts: "<<data.m_readAborts<<" Bad Checksums: "<<data.m_badChecksum<<"\n";
+		myCSV<<ctime(&t)<<": Reads: "<<data.m_readCnt<<" Writes: "<<data.m_writeCnt<<" CAN: "<<data.m_CANCnt<<" NAK: "<<data.m_NAKCnt<<" ACK: "<<data.m_ACKCnt<<" Out of Frame: "<<data.m_OOFCnt<<"\n";
+		myCSV<<ctime(&t)<<": Dropped: "<<data.m_dropped<<" Retries: "<<data.m_retries<<"\n";
 		myCSV.close();
 		// printf("SOF: %d ACK Waiting: %d Read Aborts: %d Bad Checksums: %d\n", data.m_SOFCnt, data.m_ACKWaiting, data.m_readAborts, data.m_badChecksum);
 		// printf("Reads: %d Writes: %d CAN: %d NAK: %d ACK: %d Out of Frame: %d\n", data.m_readCnt, data.m_writeCnt, data.m_CANCnt, data.m_NAKCnt, data.m_ACKCnt, data.m_OOFCnt);
