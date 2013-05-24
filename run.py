@@ -26,7 +26,7 @@ while True:
 	dest_f = PATH+"/Log/OZW_Log_"+str(DAY)+"_"+str(MONTH)+"_"+str(HOUR)+"_"+str(MIN)
 	shutil.copy(source_f,dest_f)
 	time.sleep(1)
-	os.chdir("/root/multisensor")
+	os.chdir(PATH)
 	os.system(PATH+"/HomeZwave")
 	time.sleep(1)
 	
