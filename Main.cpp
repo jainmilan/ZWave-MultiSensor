@@ -67,7 +67,7 @@ int g_luminance[255]={0};
 int g_temperature[255]={0};
 static uint32 g_homeId = 0;
 static bool   g_initFailed = false;
-ofstream myCSV;
+ofstream myCSV.myCSV1,myCSV2;
 std::time_t t;
 char b[11];
 struct tm timeinfo;
@@ -124,7 +124,7 @@ void configureSensorParameters()
         pthread_mutex_lock( &g_criticalSection );
         
         /* Request Sensitivity */
-        Manager::Get()->SetConfigParam(g_homeId, nodeId, 1, 255); 
+        Manager::Get()->SetConfigParam(g_homeId, nodeId, 1, 235); 
 		Manager::Get()->RequestConfigParam(g_homeId, nodeId, 1);
 		
         /* Request and Set the "On Time" Config Param to 20 with index 2 (See zwcfg*.xml) */
@@ -326,6 +326,10 @@ void parseHsm100Sensor(uint8 nodeId, ValueID value_id) {
             myCSV.close();
             break;
     }
+    myCSV1.open(filename1,fstream::app);
+	myCSV1<<t<<","<<(int)nodeId<<","<<g_luminance[nodeId]<<","<<g_temperature[nodeId]<<"\n";
+	myCSV1.close();
+                
 }
 
 //-----------------------------------------------------------------------------
@@ -443,6 +447,9 @@ void OnNotification
 				myCSV<<ctime(&t)<<": NodeId-"<<(int)nodeId<<" Motion Detected\n";
 				myCSV.close();
                 
+                myCSV2.open(filename2,fstream::app);
+				myCSV2<<t<<","<<(int)nodeId<<"\n";
+				myCSV2.close();
                 // Manager::Get()->RefreshNodeInfo(g_homeId, nodeId);
                 Manager::Get()->RequestNodeDynamic(g_homeId, nodeId);
                 // printf("\n");
@@ -529,13 +536,16 @@ int main( int argc, char* argv[] )
 	pthread_mutexattr_destroy( &mutexattr );
 	
 	pthread_mutex_lock( &initMutex );
-	printf("Hello\n");
 	/*Every Time Program Starts a Log File is generated Based on Timestamp*/
 	t = std::time(0);
 	// timeinfo = *localtime(&t);
 	// strftime(b, sizeof(b), "%m%d%H%M%y", &timeinfo);
 	printf("%s",ctime(&t));
-	sprintf(filename,"CSV/Log_%d.csv",t);
+	sprintf(filename,"ZWaveLog/Log_%d.csv",t);
+	// printf("%s",ctime(&t));
+	sprintf(filename1,"LT_Data/LT_Data_%d.csv",t);
+	// printf("%s",ctime(&t));
+	sprintf(filename2,"M_Data/M_Data_%d.csv",t);
 	
 	
 	// Create the OpenZWave Manager.
@@ -624,6 +634,9 @@ int main( int argc, char* argv[] )
 						// Set the Wake-up interval
 						bool success = Manager::Get()->SetValue(v, 90000);
 						// printf("Set Wake-up Interval Successfully: %s\n", (success)?"Yes":"No");
+					}
+					else if(ccId == COMMAND_CLASS_SENSOR_MULTILEVEL) {
+						Manager::Get()->EnablePoll(v,6);
 					}
 				}
 			}
