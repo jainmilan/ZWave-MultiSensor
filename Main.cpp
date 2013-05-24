@@ -67,11 +67,11 @@ int g_luminance[255]={0};
 int g_temperature[255]={0};
 static uint32 g_homeId = 0;
 static bool   g_initFailed = false;
-ofstream myCSV.myCSV1,myCSV2;
+ofstream myCSV,myCSV1,myCSV2;
 std::time_t t;
 char b[11];
 struct tm timeinfo;
-char filename[20];
+char filename[30],filename1[30],filename2[30];
 typedef struct
 {
 	uint32			m_homeId;
