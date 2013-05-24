@@ -13,7 +13,7 @@ import shutil
 from pytz import timezone
 
 a=((int)(time.time()))-3600
-PATH = "/root/multisensor_PC"
+PATH = "/root/multisensor"
 #os.system("cp "+PATH+"/OZW_Log.txt "+PATH+"/Log/OZW_Log_"+str(HOUR)+"_"+str(MIN))
 print 'File Copied'
 while True:
@@ -26,7 +26,7 @@ while True:
 	dest_f = PATH+"/Log/OZW_Log_"+str(DAY)+"_"+str(MONTH)+"_"+str(HOUR)+"_"+str(MIN)
 	shutil.copy(source_f,dest_f)
 	time.sleep(1)
-	os.chdir("/root/multisensor_PC")
+	os.chdir("/root/multisensor")
 	os.system(PATH+"/HomeZwave")
 	time.sleep(1)
 	
