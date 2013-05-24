@@ -635,7 +635,7 @@ int main( int argc, char* argv[] )
 						bool success = Manager::Get()->SetValue(v, 90000);
 						// printf("Set Wake-up Interval Successfully: %s\n", (success)?"Yes":"No");
 					}
-					else if(ccId == COMMAND_CLASS_SENSOR_MULTILEVEL) {
+					if(ccId == COMMAND_CLASS_SENSOR_MULTILEVEL) {
 						Manager::Get()->EnablePoll(v,6);
 					}
 				}
